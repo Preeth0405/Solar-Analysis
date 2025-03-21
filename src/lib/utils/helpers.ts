@@ -137,18 +137,27 @@ export function downloadCSV(data: SolarDataPoint[], filename: string): void {
 /**
  * Utility to download chart as image
  */
-export function downloadChart(chartRef: React.RefObject<HTMLElement>, filename: string): void {
-  if (!chartRef.current) return;
+export async function downloadChart(chartRef: React.RefObject<HTMLElement>, filename: string): Promise<void> {
+  // Only run in browser environment
+  if (typeof window === 'undefined' || !chartRef.current) return;
   
-  import('html-to-image').then(htmlToImage => {
-    htmlToImage.toPng(chartRef.current!)
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = dataUrl;
-        link.click();
-      });
-  });
+  try {
+    // Dynamic import that only runs in browser
+    const htmlToImage = await import('html-to-image').catch(() => null);
+    
+    if (!htmlToImage) {
+      console.error('Export failed: html-to-image module not available');
+      return;
+    }
+    
+    const dataUrl = await htmlToImage.toPng(chartRef.current);
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    link.click();
+  } catch (error) {
+    console.error('Failed to export chart:', error);
+  }
 }
 
 /**
