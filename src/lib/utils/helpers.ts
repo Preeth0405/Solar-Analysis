@@ -135,30 +135,13 @@ export function downloadCSV(data: SolarDataPoint[], filename: string): void {
 }
 
 /**
- * Utility to download chart as image
+ * Utility to download chart as image (disabled for deployment)
  */
-export async function downloadChart(chartRef: React.RefObject<HTMLElement>, filename: string): Promise<void> {
-  // Only run in browser environment
-  if (typeof window === 'undefined' || !chartRef.current) return;
-  
-  try {
-    // Dynamic import that only runs in browser
-    const htmlToImage = await import('html-to-image').catch(() => null);
-    
-    if (!htmlToImage) {
-      console.error('Export failed: html-to-image module not available');
-      return;
-    }
-    
-    const dataUrl = await htmlToImage.toPng(chartRef.current);
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = dataUrl;
-    link.click();
-  } catch (error) {
-    console.error('Failed to export chart:', error);
-  }
+export function downloadChart(chartRef: React.RefObject<HTMLElement>, filename: string): void {
+  console.log('Chart export functionality disabled in this build');
+  // Function does nothing in this build
 }
+
 
 /**
  * Utility to generate color scale for heatmaps
